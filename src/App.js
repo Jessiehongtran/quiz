@@ -83,7 +83,8 @@ export default class App extends React.Component {
                 <input 
                   type="radio"
                   value={answer.answer} 
-                  checked={this.state.answer === answer.answer} 
+                  name={each.questionID}
+                  // checked={this.state.answer === answer.answer} 
                   onChange={e => this.onChangeAnswer(e, each.questionID, answer.answerID)}
                 />
                 <span>{answer.answer}</span>
