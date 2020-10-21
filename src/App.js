@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import axios from 'axios';
+import ProgressBar from './components/ProgressBar';
 import { API_URL } from './apiConfig';
 
 export default class App extends React.Component {
@@ -10,7 +11,11 @@ export default class App extends React.Component {
       userId: 1,
       questions: [],
       answer: "",
-      responses: []
+      responses: [],
+      preAnswerIsCorrect: false,
+      prescore: 0,
+      score: 0,
+      percentage: 0
     }
 
     this.onChangeAnswer = this.onChangeAnswer.bind(this)
@@ -22,7 +27,11 @@ export default class App extends React.Component {
     try {
       const res = await axios.get(`${API_URL}/questions`)
       console.log('res', res)
-      this.setState({questions: res.data})
+      if (res.data.length > 0){
+        this.setState({
+            questions: res.data
+        })
+      }
     } catch (err){
       console.error(err)
     }
@@ -43,22 +52,41 @@ export default class App extends React.Component {
       const foundID = this.isInResponses(response.questionID)[1]
       curResponses[foundID].answerID = response.answerID
       this.setState({responses: curResponses})
+
+      if (response.isAnswer){
+        this.setState({score: this.state.score + 20})
+        this.setState({preAnswerIsCorrect: true})
+      } else {
+        if (this.state.preAnswerIsCorrect){
+          this.setState({score: this.state.score - 20})
+        }
+      }
     } else {
       this.setState({
         responses: [
           ...this.state.responses,
           response
-        ]
+        ],
+        percentage: this.state.percentage + 1/(this.state.questions.length)*100
       })
+
+      if (response.isAnswer){
+        this.setState({score: this.state.score + 10})
+        this.setState({preAnswerIsCorrect: true})
+      } else {
+        this.setState({score: this.state.score - 10})
+      }
+
     }
   }
 
-  onChangeAnswer(e, questionId, answerId){
+  onChangeAnswer(e, questionId, answerId, isAnswer){
     this.setState({answer: e.target.value})
     this.updateResponse({
       userID: this.state.userId,
       questionID: questionId,
-      answerID: answerId
+      answerID: answerId,
+      isAnswer: isAnswer
     })
   }
 
@@ -71,21 +99,23 @@ export default class App extends React.Component {
 
     console.log('responses', this.state.responses)
 
+    console.log('score', this.state.score)
+
     return (
       <div className="App">
         <h1>Quiz</h1>
         {questions.length > 0
-        ? questions.map(each => <div className="each-question">
-          <span>{each.question}</span>
+        ? questions.map(each => <div key={each.questionID} className="each-question">
+          <span className="question">{each.question}</span>
           <ul>
             {each.answers
-            ? each.answers.map((answer, ansInd) => <li>
+            ? each.answers.map((answer, ansInd) => <li key={ansInd}>
                 <input 
                   type="radio"
                   value={answer.answer} 
                   name={each.questionID}
                   // checked={this.state.answer === answer.answer} 
-                  onChange={e => this.onChangeAnswer(e, each.questionID, answer.answerID)}
+                  onChange={e => this.onChangeAnswer(e, each.questionID, answer.answerID, answer.isAnswer)}
                 />
                 <span>{answer.answer}</span>
             </li>)
@@ -93,6 +123,13 @@ export default class App extends React.Component {
           </ul>
         </div>)
         : null}
+        <div className="progress-bar">
+              <ProgressBar percentage={this.state.percentage}/>
+        </div>
+        <h4>
+          Your score is
+          <span className="score"> {this.state.score}</span>
+        </h4>
       </div>
     );
   }

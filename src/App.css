@@ -10,6 +10,10 @@
   align-items: flex-start;
 }
 
+.question {
+  text-align: left;
+}
+
 ul {
   text-align: left;
 }
@@ -20,4 +24,14 @@ li {
 
 input {
   margin-right: 10px;
+}
+
+.score {
+  font-size: 20px;
+  color: red;
+}
+
+.progress-bar {
+  display: flex;
+  justify-content:center;
 }
