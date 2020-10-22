@@ -3,6 +3,7 @@ import './App.css';
 import axios from 'axios';
 import ProgressBar from './components/ProgressBar';
 import { API_URL } from './apiConfig';
+import CreateQuestion from './components/CreateQuestion';
 
 export default class App extends React.Component {
   constructor(props){
@@ -15,12 +16,14 @@ export default class App extends React.Component {
       preAnswerIsCorrect: false,
       prescore: 0,
       score: 0,
-      percentage: 0
+      percentage: 0,
+      fieldQuestions: []
     }
 
     this.onChangeAnswer = this.onChangeAnswer.bind(this)
     this.isInResponses = this.isInResponses.bind(this)
     this.updateResponse = this.updateResponse.bind(this)
+    this.addQues = this.addQues.bind(this)
   }
 
   async componentDidMount(){
@@ -90,6 +93,13 @@ export default class App extends React.Component {
     })
   }
 
+  addQues(){
+    this.setState({fieldQuestions: [
+      ...this.state.fieldQuestions,
+      0
+    ]})
+  }
+
   render(){
     const { questions } = this.state
 
@@ -104,6 +114,10 @@ export default class App extends React.Component {
     return (
       <div className="App">
         <h1>Quiz</h1>
+        <button onClick={this.addQues}>+ Question</button>
+        {this.state.fieldQuestions.length > 0 
+        ? this.state.fieldQuestions.map((ques, i) => <CreateQuestion key={i} />)
+        : null}
         {questions.length > 0
         ? questions.map(each => <div key={each.questionID} className="each-question">
           <span className="question">{each.question}</span>
