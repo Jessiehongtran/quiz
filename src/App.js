@@ -114,10 +114,13 @@ export default class App extends React.Component {
     return (
       <div className="App">
         <h1>Quiz</h1>
-        <button onClick={this.addQues}>+ Question</button>
+        {/* <button onClick={this.addQues}>+ Question</button>
         {this.state.fieldQuestions.length > 0 
         ? this.state.fieldQuestions.map((ques, i) => <CreateQuestion key={i} />)
-        : null}
+        : null} */}
+        <div className="progress-bar">
+              <ProgressBar percentage={this.state.percentage}/>
+        </div>
         {questions.length > 0
         ? questions.map(each => <div key={each.questionID} className="each-question">
           <span className="question">{each.question}</span>
@@ -137,9 +140,7 @@ export default class App extends React.Component {
           </ul>
         </div>)
         : null}
-        <div className="progress-bar">
-              <ProgressBar percentage={this.state.percentage}/>
-        </div>
+        
         <h4>
           Your score is
           <span className="score"> {this.state.score}</span>
